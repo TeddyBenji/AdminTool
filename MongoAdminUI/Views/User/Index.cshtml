@@ -1,0 +1,49 @@
+﻿@model IEnumerable<MongoAdminUI.Models.UserViewModel>
+
+@{
+    ViewData["Title"] = "User List";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Id</th>
+            <th>UserName</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var userView in Model)
+        {
+            <tr>
+                <td>@userView.Name</td>
+                <td>@userView.Id</td>
+                <td>@userView.UserName</td>
+                <td>@userView.Email</td>
+                <td>
+                    @if (userView.Roles != null && userView.Roles.Any())
+                    {
+                        @String.Join(", ", userView.Roles)
+                    }
+                    else
+                    {
+                        <text>No roles assigned</text>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-username="@userView.UserName">Edit</a> |
+                    <a asp-action="Details" asp-route-username="@userView.UserName">Details</a> |
+                    <a asp-action="Delete" asp-route-username="@userView.UserName">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create">Create New User</a>
+
