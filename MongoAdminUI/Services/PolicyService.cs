@@ -12,7 +12,7 @@ namespace MongoAdminUI.Services
         public PolicyService(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("ChemoMetecDatabase"));
-            var database = client.GetDatabase("ChemoMetec");
+            var database = client.GetDatabase("Chemometec");
             _policies = database.GetCollection<PolicyModel>("Policy");
         }
 
@@ -25,7 +25,7 @@ namespace MongoAdminUI.Services
         // Get a single policy by Name
         public async Task<PolicyModel> GetPolicyByNameAsync(string policyName)
         {
-            return await _policies.Find<PolicyModel>(policy => policy.PolicyName == policyName).FirstOrDefaultAsync();
+            return await _policies.Find<PolicyModel>(policy => policy.Name == policyName).FirstOrDefaultAsync();
         }
 
         // Add a new policy
@@ -37,13 +37,13 @@ namespace MongoAdminUI.Services
         // Update an existing policy
         public async Task UpdatePolicyAsync(string policyName, PolicyModel updatedPolicy)
         {
-            await _policies.ReplaceOneAsync(policy => policy.PolicyName == policyName, updatedPolicy);
+            await _policies.ReplaceOneAsync(policy => policy.Name == policyName, updatedPolicy);
         }
 
         // Delete a policy
         public async Task DeletePolicyAsync(string policyName)
         {
-            await _policies.DeleteOneAsync(policy => policy.PolicyName == policyName);
+            await _policies.DeleteOneAsync(policy => policy.Name == policyName);
         }
     }
 }

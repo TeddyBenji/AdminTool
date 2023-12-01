@@ -40,7 +40,7 @@ namespace MongoAdminUI.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _policyService.UpdatePolicyAsync(policyModel.PolicyName, policyModel);
+                await _policyService.UpdatePolicyAsync(policyModel.Name, policyModel);
                 return RedirectToAction("Index");
             }
             return View(policyModel);

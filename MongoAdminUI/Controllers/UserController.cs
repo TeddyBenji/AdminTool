@@ -2,6 +2,11 @@
 using MongoAdminUI.Services;
 using MongoAdminUI.Models;
 using System.Threading.Tasks;
+using MongoDB.Bson.IO;
+using System.Net.Http.Headers;
+using System.Text;
+using Newtonsoft.Json;
+using MongoAdminUI.Filters;
 
 namespace MongoAdminUI.Controllers
 {
@@ -56,31 +61,57 @@ namespace MongoAdminUI.Controllers
             return RedirectToAction("Index");
         }
 
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View(); // No need to pass a new UserModel if you don't have default values to set
-        }
-
-        // POST: User/Create
-        // This endpoint processes the submitted form for creating a new user
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserModel userModel)
-        {
-            if (ModelState.IsValid)
+            // This action displays the form for creating a new user
+            [HttpGet]
+            public IActionResult CreateUser()
             {
-                // Add logic to handle the creation of the user using the UserService
-                await _userService.AddUserAsync(userModel);
-                // Redirect to the index action after successful creation
-                return RedirectToAction(nameof(Index));
+                return View(new CreateUserModel()); // Returns the view with an empty model
             }
-            // If validation fails, show the form again with validation error messages
-            return View(userModel);
-        }
 
+            // This action processes the form submission
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> CreateUser(CreateUserModel model)
+            {
+                if (ModelState.IsValid)
+                {
+                    var token = HttpContext.Session.GetString("AccessToken");
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        return RedirectToAction("Index", "Login");
+                    }
 
+                    using (var httpClient = new HttpClient())
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
+                        var response = await httpClient.PostAsJsonAsync("https://localhost:7042/api/user/creating/new/user", model);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            // Assuming "UserCreated" is an action that shows a success message or the created user details
+                            return RedirectToAction("UserCreated"); // Redirect to an action that shows user creation was successful
+                        }
+                        else
+                        {
+                            var errorResponse = await response.Content.ReadAsStringAsync();
+                            // Log the error response and add it to the ModelState
+                            ModelState.AddModelError(string.Empty, $"User creation failed: {errorResponse}");
+                        }
+                    }
+                }
+
+                // If model state is not valid or user creation failed, return to the view with the model and error messages
+                return View(model);
+            }
+
+            // This action shows a confirmation of user creation
+            [HttpGet]
+            public IActionResult UserCreated()
+            {
+                // Implement this method to display a confirmation message or the details of the created user
+                return View();
+            }
     }
+
 }
+

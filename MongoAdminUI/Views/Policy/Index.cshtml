@@ -1,0 +1,42 @@
+﻿@model IEnumerable<MongoAdminUI.Models.PolicyModel>
+
+@{
+    ViewData["Title"] = "Policy List";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Policy Name</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var policy in Model)
+        {
+            <tr>
+                <td>@policy.Name</td>
+                <td>
+                    @if (policy.Roles != null && policy.Roles.Any())
+                    {
+                        @String.Join(", ", policy.Roles)
+                    }
+                    else
+                    {
+                        <text>No roles assigned</text>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-policyName="@policy.Name">Edit</a> |
+                    <a asp-action="Delete" asp-route-policyName="@policy.Name">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create">Create New Policy</a>
+

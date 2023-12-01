@@ -10,6 +10,13 @@ builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<RoleService>();
 builder.Services.AddSingleton<PolicyService>();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set a timeout for the session
+    options.Cookie.HttpOnly = true; // Set the session cookie to HttpOnly for security
+    options.Cookie.IsEssential = true; // Make the session cookie essential
+});
 
 builder.Services.AddControllersWithViews();
 
@@ -27,6 +34,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

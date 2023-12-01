@@ -1,0 +1,23 @@
+﻿@* Assuming you are using the LoginModel *@
+@model MongoAdminUI.Models.LoginModel
+
+<h2>Welcome to MongoAdminUI</h2>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <form asp-controller="Login" asp-action="Index" method="post">
+        <label asp-for="Username">Username</label>
+        <input asp-for="Username" type="text" />
+
+        <label asp-for="Password">Password</label>
+        <input asp-for="Password" type="password" />
+
+        <button type="submit">Log in</button>
+    </form>
+}
+else
+{
+    <p>Welcome, @User.Identity.Name!</p>
+    <!-- Other authenticated user content -->
+}
+
