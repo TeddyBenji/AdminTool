@@ -1,7 +1,9 @@
 ﻿using MongoDB.Driver;
-using MongoAdminUI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using MongoAdminUI.Models.RoleModels;
+using MongoAdminUI.Models.UserModels;
 
 namespace MongoAdminUI.Services
 {
@@ -86,15 +88,53 @@ namespace MongoAdminUI.Services
         }
 
         // Update an existing user
-        public async Task UpdateUserAsync(string username, UserModel updatedUser)
+        public async Task UpdateUserAsync(string UserName, UserModel updatedUser, List<string> roleNamesToUpdate)
         {
-            await _users.ReplaceOneAsync(user => user.UserName == username, updatedUser);
+            // Fetch all roles from the database
+            var allRoles = await _roles.Find(_ => true).ToListAsync();
+
+            // Translate role names to their corresponding Guid IDs
+            var validRoleIds = allRoles
+                                .Where(role => roleNamesToUpdate.Contains(role.Name))
+                                .Select(role => role.Id)
+                                .ToList();
+
+            // Check if all role names have corresponding role IDs
+            if (validRoleIds.Count != roleNamesToUpdate.Count)
+            {
+                throw new InvalidOperationException("One or more roles do not exist.");
+            }
+
+            // Update the user with the new role IDs
+            var filter = Builders<UserModel>.Filter.Eq(user => user.UserName, UserName); // Match the case as in the database
+            var update = Builders<UserModel>.Update
+                .Set(user => user.Name, updatedUser.Name)
+                .Set(user => user.Email, updatedUser.Email)
+                .Set(user => user.Roles, validRoleIds); // Update with the valid role IDs
+
+            await _users.UpdateOneAsync(filter, update);
         }
+
 
         // Delete a user
         public async Task DeleteUserAsync(string username)
         {
             await _users.DeleteOneAsync(user => user.UserName == username);
+        }
+
+        public async Task<List<string>> GetUserRolesAsync(string username)
+        {
+            var user = await _users.Find<UserModel>(u => u.UserName == username).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                return new List<string>();
+            }
+
+            var roleIds = user.Roles; 
+
+            var roleNames = await GetRoleNamesFromUUIDsAsync(roleIds);
+
+            return roleNames;
         }
 
     }

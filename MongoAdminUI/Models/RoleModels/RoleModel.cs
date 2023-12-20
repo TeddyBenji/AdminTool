@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 
-namespace MongoAdminUI.Models
+namespace MongoAdminUI.Models.RoleModels
 {
     [BsonIgnoreExtraElements]
     public class RoleModel

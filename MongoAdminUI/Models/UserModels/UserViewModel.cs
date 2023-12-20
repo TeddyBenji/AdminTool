@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MongoAdminUI.Models
+namespace MongoAdminUI.Models.UserModels
 {
     public class UserViewModel
     {

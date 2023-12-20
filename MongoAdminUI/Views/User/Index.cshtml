@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MongoAdminUI.Models.UserViewModel>
+﻿@model IEnumerable<MongoAdminUI.Models.UserModels.UserViewModel>
 
 @{
     ViewData["Title"] = "User List";
@@ -37,8 +37,13 @@
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-username="@userView.UserName">Edit</a> |
-                    <a asp-action="Details" asp-route-username="@userView.UserName">Details</a> |
-                    <a asp-action="Delete" asp-route-username="@userView.UserName">Delete</a>
+                    <a asp-action="AssignRole" asp-controller="User" asp-route-username="@userView.UserName">Assign Role</a> |
+                    <a asp-action="UnAssignRole" asp-controller="User" asp-route-username="@userView.UserName">Unassign Role</a> |
+                    @using (Html.BeginForm("Delete", "User", FormMethod.Post, new { @class = "d-inline" }))
+                    {
+                        <input type="hidden" name="username" value="@userView.UserName" />
+                        <input type="submit" value="Delete" class="link-like" onclick="return confirm('Are you sure you want to delete this user?');" />
+                    }
                 </td>
             </tr>
         }
@@ -46,5 +51,18 @@
 </table>
 
 <a asp-controller="User" asp-action="CreateUser">Create New User</a>
+
+<style>
+    .link-like {
+        background: none !important;
+        border: none;
+        padding: 0 !important;
+        font-family: arial, sans-serif;
+        color: #069;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+
 
 

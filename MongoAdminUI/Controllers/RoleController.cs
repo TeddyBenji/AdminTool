@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MongoAdminUI.Services;
-using MongoAdminUI.Models;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using MongoAdminUI.Models.RoleModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MongoAdminUI.Controllers
 {
+    [Authorize(Policy = "SecurityAdminAccess")]
     public class RoleController : Controller
     {
         private readonly RoleService _roleService;
@@ -35,6 +38,7 @@ namespace MongoAdminUI.Controllers
 
         // Handle role update
         [HttpPost]
+        [Authorize(Policy = "SecurityAdminAccess")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(RoleModel roleModel)
         {
@@ -54,19 +58,53 @@ namespace MongoAdminUI.Controllers
 
         // Handle new role creation
         [HttpPost]
+        [Authorize(Policy = "SecurityAdminAccess")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(RoleModel roleModel)
+        public async Task<IActionResult> Create(CreateRoleViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _roleService.AddRoleAsync(roleModel);
-                return RedirectToAction("Index");
+                // Convert comma-separated claims into a List
+                var claimsList = model.Claims?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                              .Select(c => c.Trim())
+                                              .ToList() ?? new List<string>();
+
+                var createRoleModel = new CreateRole
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Claims = claimsList
+                };
+
+                var token = HttpContext.Session.GetString("AccessToken");
+                if (string.IsNullOrEmpty(token))
+                {
+                    return RedirectToAction("Index", "Login");
+                }
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var response = await httpClient.PostAsJsonAsync("https://localhost:7042/api/Role/Create/New/Role", createRoleModel);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        var errorResponse = await response.Content.ReadAsStringAsync();
+                        ModelState.AddModelError(string.Empty, $"Role creation failed: {errorResponse}");
+                    }
+                }
             }
-            return View(roleModel);
+
+            return View(model);
         }
 
         // Handle role deletion
         [HttpPost]
+        [Authorize(Policy = "SecurityAdminAccess")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string roleName)
         {

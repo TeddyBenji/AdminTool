@@ -1,13 +1,14 @@
 ﻿using MongoDB.Driver;
-using MongoAdminUI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amazon.Runtime;
+using MongoAdminUI.Models.RoleModels;
 
 namespace MongoAdminUI.Services
 {
     public class RoleService
     {
-        private readonly IMongoCollection<RoleModel> _roles;
+        private readonly IMongoCollection<RoleModel> _roles;        
 
         public RoleService(IConfiguration config)
         {

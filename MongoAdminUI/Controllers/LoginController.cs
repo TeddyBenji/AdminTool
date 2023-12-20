@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace MongoAdminUI.Controllers
 {
@@ -24,7 +27,6 @@ namespace MongoAdminUI.Controllers
 
         // POST: Login
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(LoginModel model)
         {
             if (ModelState.IsValid)
@@ -66,7 +68,7 @@ namespace MongoAdminUI.Controllers
                     new KeyValuePair<string, string>("client_secret", clientSecret),
                     new KeyValuePair<string, string>("username", username),
                     new KeyValuePair<string, string>("password", password),
-                    new KeyValuePair<string, string>("scope", "read write delete admin")
+                    new KeyValuePair<string, string>("scope", "openid profile adminui")
                 });
 
                 var response = await client.PostAsync(tokenEndpoint, content);
@@ -86,6 +88,23 @@ namespace MongoAdminUI.Controllers
                 }
             }
         }
+
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            // Clear the session
+            HttpContext.Session.Clear();
+
+            // Redirect to the login page
+            return RedirectToAction("Index", "Login");
+        }
+
+
+
+
+
     }
 }
 

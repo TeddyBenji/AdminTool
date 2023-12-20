@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace MongoAdminUI.Models
+namespace MongoAdminUI.Models.UserModels
 {
     [BsonIgnoreExtraElements]
     public class UserModel

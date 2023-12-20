@@ -1,7 +1,8 @@
 using MongoAdminUI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 var mongoIDConnectionString = builder.Configuration.GetConnectionString("MongoIDDatabase");
 var chemoMetecConnectionString = builder.Configuration.GetConnectionString("ChemoMetecDatabase");
@@ -13,10 +14,32 @@ builder.Services.AddSingleton<PolicyService>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set a timeout for the session
-    options.Cookie.HttpOnly = true; // Set the session cookie to HttpOnly for security
-    options.Cookie.IsEssential = true; // Make the session cookie essential
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
 });
+
+// Add authentication services and configure JWT bearer options
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("SecurityAdminAccess", policy =>
+        policy.RequireRole("SecureAdmin"));
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost:7042";
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false, 
+        };
+    });
+
+
 
 builder.Services.AddControllersWithViews();
 
@@ -25,18 +48,20 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    //app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
-
 app.UseSession();
 
+app.UseMiddleware<MongoAdminUI.Middleware.TokenSessionMiddleware>();
+
+app.UseRouting();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -44,3 +69,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+

@@ -1,0 +1,29 @@
+﻿@model MongoAdminUI.Models.UserModels.AssignUserRole
+
+@{
+    ViewData["Title"] = "Assign Role";
+    var roleSelectList = ViewBag.Roles as SelectList;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="AssignRole" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="UserName" class="control-label">User Name</label>
+        <input asp-for="UserName" class="form-control" />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RoleName" class="control-label">Role Name</label>
+        <select asp-for="RoleName" asp-items="roleSelectList" class="form-control"></select>
+        <span asp-validation-for="RoleName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Assign" class="btn btn-primary" />
+    </div>
+</form>
+

@@ -1,0 +1,38 @@
+﻿@model MongoAdminUI.Models.RoleModels.CreateRoleViewModel
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="Name" class="control-label">Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label">Description</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Claims" class="control-label">Claims</label>
+        <input asp-for="Claims" class="form-control" placeholder="Enter claims separated by commas" />
+        <span asp-validation-for="Claims" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
+
+
+
+
+

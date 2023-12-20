@@ -22,22 +22,39 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <!-- Add User Management link -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
-                        </li>
-                        <!-- Add Role Management link -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Roles</a>
-                        </li>
-                        <!-- Add Policy Management link -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Policy" asp-action="Index">Policies</a>
-                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <!-- Add User Management link -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+                            </li>
+                            <!-- Add Role Management link -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Roles</a>
+                            </li>
+                            <!-- Add Policy Management link -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Policy" asp-action="Index">Policies</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    <!-- Logout Button -->
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <form asp-controller="Login" asp-action="Logout" method="post" class="form-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    }
                 </div>
             </div>
         </nav>
@@ -59,3 +76,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

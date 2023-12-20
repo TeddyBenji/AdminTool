@@ -1,7 +1,8 @@
 ﻿using MongoDB.Driver;
-using MongoAdminUI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
+using MongoAdminUI.Models.PolicyModels;
 
 namespace MongoAdminUI.Services
 {
@@ -35,10 +36,35 @@ namespace MongoAdminUI.Services
         }
 
         // Update an existing policy
-        public async Task UpdatePolicyAsync(string policyName, PolicyModel updatedPolicy)
+        // Update an existing policy
+        public async Task UpdatePolicyAsync(string policyName, List<string> newRolesList)
         {
-            await _policies.ReplaceOneAsync(policy => policy.Name == policyName, updatedPolicy);
+            // Fetch the current policy
+            var policy = await _policies.Find<PolicyModel>(p => p.Name == policyName).FirstOrDefaultAsync();
+
+            if (policy == null)
+            {
+                throw new InvalidOperationException("Policy not found.");
+            }
+
+            // Combine new roles with existing ones, avoiding duplicates
+            var updatedRolesList = policy.Roles.Union(newRolesList).Distinct().ToList();
+
+            // Create an update definition for the roles
+            var update = Builders<PolicyModel>.Update.Set(p => p.Roles, updatedRolesList);
+
+            // Perform the update operation
+            var result = await _policies.UpdateOneAsync(p => p.Name == policyName, update);
+
+            // Optionally handle the case where no modification happened
+            if (result.ModifiedCount == 0)
+            {
+                // You can log or handle the case where no update was necessary
+            }
         }
+
+
+
 
         // Delete a policy
         public async Task DeletePolicyAsync(string policyName)

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MongoAdminUI.Models.PolicyModel>
+﻿@model IEnumerable<MongoAdminUI.Models.PolicyModels.PolicyModel>
 
 @{
     ViewData["Title"] = "Policy List";
@@ -30,8 +30,11 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-policyName="@policy.Name">Edit</a> |
-                    <a asp-action="Delete" asp-route-policyName="@policy.Name">Delete</a>
+                    <a asp-action="Edit" asp-controller="Policy" asp-route-policyName="@policy.Name">Edit</a> |
+                    @using (Html.BeginForm("Delete", "Policy", new { policyName = policy.Name }, FormMethod.Post))
+                    {
+                        <button type="submit" class="link-like" onclick="return confirm('Are you sure you want to delete this policy?');">Delete</button>
+                    }
                 </td>
             </tr>
         }
@@ -39,4 +42,20 @@
 </table>
 
 <a asp-action="Create">Create New Policy</a>
+
+<style>
+    .link-like {
+        background: none !important;
+        border: none;
+        padding: 0 !important;
+        font-family: arial, sans-serif;
+        color: #069;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+
+
+
+
 
