@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace MongoAdminUI.Models.PolicyModels
 {
@@ -12,6 +13,9 @@ namespace MongoAdminUI.Models.PolicyModels
         public string Name { get; set; }
 
         public List<string>? Roles { get; set; }
-    }
 
+        public List<string>? RolesToAdd { get; set; }
+
+        public List<string>? RolesToRemove { get; set; }
+    }
 }

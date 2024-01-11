@@ -66,20 +66,9 @@ namespace MongoAdminUI.Controllers
             {
                 try
                 {
-                    // Retrieve the current policy to get existing roles
-                    var currentPolicy = await _policyService.GetPolicyByNameAsync(policyModel.Name);
-                    if (currentPolicy == null)
-                    {
-                        throw new InvalidOperationException("Policy not found.");
-                    }
+                    // Update the policy with roles to add and remove
+                    await _policyService.UpdatePolicyAsync(policyModel.Name, policyModel.RolesToAdd, policyModel.RolesToRemove);
 
-                    // Combine existing roles with new roles
-                    var updatedRolesList = currentPolicy.Roles.Union(policyModel.Roles).Distinct().ToList();
-
-                    // Update the policy with combined roles
-                    await _policyService.UpdatePolicyAsync(policyModel.Name, updatedRolesList);
-
-                    
                     return RedirectToAction("Index");
                 }
                 catch (InvalidOperationException ex)
@@ -88,12 +77,13 @@ namespace MongoAdminUI.Controllers
                 }
             }
 
-            // Repopulate the Roles SelectList for the view if ModelState is not valid or an exception occurred
+            // Repopulate the Roles SelectList for the view
             var allRoles = await _roleService.GetRolesAsync();
             ViewBag.Roles = new SelectList(allRoles, "Name", "Name", policyModel.Roles);
 
             return View(policyModel);
         }
+
 
 
 
@@ -123,7 +113,7 @@ namespace MongoAdminUI.Controllers
                 return RedirectToAction("Index");
             }
 
-            
+            // Repopulate the roles dropdown in case of an error
             var allRoles = await _roleService.GetRolesAsync();
             ViewBag.Roles = new SelectList(allRoles, "Name", "Name");
 

@@ -35,8 +35,8 @@ namespace MongoAdminUI.Services
             await _policies.InsertOneAsync(policy);
         }
 
-        
-        public async Task UpdatePolicyAsync(string policyName, List<string> newRolesList)
+
+        public async Task UpdatePolicyAsync(string policyName, List<string> rolesToAdd, List<string> rolesToRemove)
         {
             // Fetch the current policy
             var policy = await _policies.Find<PolicyModel>(p => p.Name == policyName).FirstOrDefaultAsync();
@@ -46,19 +46,26 @@ namespace MongoAdminUI.Services
                 throw new InvalidOperationException("Policy not found.");
             }
 
-            
-            var updatedRolesList = policy.Roles.Union(newRolesList).Distinct().ToList();
+            // Ensure the lists are not null
+            rolesToAdd ??= new List<string>();
+            rolesToRemove ??= new List<string>();
 
-            
+            // Combine new roles with existing ones, avoiding duplicates, and remove specified roles
+            var updatedRolesList = policy.Roles
+                                         .Union(rolesToAdd)
+                                         .Except(rolesToRemove)
+                                         .Distinct()
+                                         .ToList();
+
+            // Create an update definition for the roles
             var update = Builders<PolicyModel>.Update.Set(p => p.Roles, updatedRolesList);
 
-            
+            // Perform the update operation
             var result = await _policies.UpdateOneAsync(p => p.Name == policyName, update);
 
-            
             if (result.ModifiedCount == 0)
             {
-                
+                // Handle the case where no update was necessary
             }
         }
 
