@@ -76,7 +76,7 @@ namespace MongoAdminUI.Controllers
                     {
                         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                        var response = await httpClient.PutAsJsonAsync("https://localhost:7042/api/User/update/user", updateUser);
+                        var response = await httpClient.PutAsJsonAsync("https://data-platform-test.chemometec.com/Identity/api/User/update/user", updateUser);
                         if (response.IsSuccessStatusCode)
                         {
                             return RedirectToAction("Index");
@@ -109,15 +109,15 @@ namespace MongoAdminUI.Controllers
             return RedirectToAction("Index");
         }
 
-            // This action displays the form for creating a new user
+            
         [HttpGet]
         [Authorize(Policy = "SecurityAdminAccess")]
         public IActionResult CreateUser()
         {
-        return View(new CreateUserModel()); // Returns the view with an empty model
+        return View(new CreateUserModel()); 
         }
 
-            // This action processes the form submission
+            
         [HttpPost]
         [Authorize(Policy = "SecurityAdminAccess")]
         [ValidateAntiForgeryToken]
@@ -135,7 +135,7 @@ namespace MongoAdminUI.Controllers
         {
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var response = await httpClient.PostAsJsonAsync("https://localhost:7042/api/user/creating/new/user", model);
+        var response = await httpClient.PostAsJsonAsync("https://data-platform-test.chemometec.com/Identity/api/user/creating/new/user", model);
         if (response.IsSuccessStatusCode)
         {                   
         return RedirectToAction("UserCreated"); 
@@ -149,15 +149,15 @@ namespace MongoAdminUI.Controllers
         }
         }
 
-                // If model state is not valid or user creation failed, return to the view with the model and error messages
+                
         return View(model);
         }
 
-            // This action shows a confirmation of user creation
+            
         [HttpGet]
         public IActionResult UserCreated()
         {
-        // Implement this method to display a confirmation message or the details of the created user
+        
         return View();
         }
 
@@ -166,7 +166,7 @@ namespace MongoAdminUI.Controllers
         public async Task<IActionResult> AssignRole()
         {
             var roles = await _roleService.GetRolesAsync();
-            ViewBag.Roles = new SelectList(roles, "Name", "Name"); // Adjust the properties if necessary
+            ViewBag.Roles = new SelectList(roles, "Name", "Name"); 
 
             return View(new AssignUserRole());
         }
@@ -188,11 +188,11 @@ namespace MongoAdminUI.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await httpClient.PostAsJsonAsync("https://localhost:7042/api/userroles/assign-role", model);
+                    var response = await httpClient.PostAsJsonAsync("https://data-platform-test.chemometec.com/Identity/api/userroles/assign-role", model);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return RedirectToAction("Index", "User"); // Redirects back to the User List view
+                        return RedirectToAction("Index", "User"); 
                     }
                     else
                     {
@@ -200,10 +200,10 @@ namespace MongoAdminUI.Controllers
                         ModelState.AddModelError(string.Empty, $"Role assignment failed: {errorResponse}");
                     }
                 }
-                // After the using block, this code path needs to return a value.
+                
                 return View(model);
             }
-            // If ModelState is not valid, return the view with the model to show validation errors
+            
             return View(model);
         }
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,12 +212,12 @@ namespace MongoAdminUI.Controllers
         [Authorize(Policy = "SecurityAdminAccess")]
         public async Task<IActionResult> UnAssignRole(string username)
         {
-            var userRoles = await _userService.GetUserRolesAsync(username); // Assuming this is your new method
+            var userRoles = await _userService.GetUserRolesAsync(username); 
             ViewBag.Roles = new SelectList(userRoles);
 
             var model = new AssignUserRole
             {
-                UserName = username // Preset the username in the model
+                UserName = username 
             };
 
             return View(model);
@@ -242,11 +242,11 @@ namespace MongoAdminUI.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await httpClient.PostAsJsonAsync("https://localhost:7042/api/userroles/remove-role", model);
+                    var response = await httpClient.PostAsJsonAsync("https://data-platform-test.chemometec.com/Identity/api/userroles/remove-role", model);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return RedirectToAction("Index", "User"); // Redirects back to the User List view
+                        return RedirectToAction("Index", "User"); 
                     }
                     else
                     {
@@ -254,10 +254,10 @@ namespace MongoAdminUI.Controllers
                         ModelState.AddModelError(string.Empty, $"Role assignment failed: {errorResponse}");
                     }
                 }
-                // After the using block, this code path needs to return a value.
+                
                 return View(model);
             }
-            // If ModelState is not valid, return the view with the model to show validation errors
+            
             return View(model);
         }
 

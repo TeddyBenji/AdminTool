@@ -5,6 +5,7 @@ namespace MongoAdminUI.Filters
 {
     public class AttachTokenAttribute : ActionFilterAttribute
     {
+        //fetch token from session
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);

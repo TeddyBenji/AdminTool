@@ -12,7 +12,7 @@ namespace MongoAdminUI.Controllers
     {
         private readonly RoleService _roleService;
 
-        // Dependency injection of RoleService
+        
         public RoleController(RoleService roleService)
         {
             _roleService = roleService;
@@ -85,7 +85,7 @@ namespace MongoAdminUI.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var response = await httpClient.PostAsJsonAsync("https://localhost:7042/api/Role/Create/New/Role", createRoleModel);
+                    var response = await httpClient.PostAsJsonAsync("https://data-platform-test.chemometec.com/Identity/api/Role/Create/New/Role", createRoleModel);
 
                     if (response.IsSuccessStatusCode)
                     {

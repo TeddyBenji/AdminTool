@@ -11,7 +11,7 @@ namespace MongoAdminUI.Models.PolicyModels
 
         public string Name { get; set; }
 
-        public List<string>? Roles { get; set; } // Now a list of strings
+        public List<string>? Roles { get; set; }
     }
 
 }

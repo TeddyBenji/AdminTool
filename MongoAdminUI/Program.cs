@@ -31,7 +31,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = "https://localhost:7042";
+        options.Authority = "https://data-platform-test.chemometec.com/Identity";
 
         options.TokenValidationParameters = new TokenValidationParameters
         {

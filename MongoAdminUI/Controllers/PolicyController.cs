@@ -79,7 +79,7 @@ namespace MongoAdminUI.Controllers
                     // Update the policy with combined roles
                     await _policyService.UpdatePolicyAsync(policyModel.Name, updatedRolesList);
 
-                    // Redirect to a confirmation page or back to the policy list
+                    
                     return RedirectToAction("Index");
                 }
                 catch (InvalidOperationException ex)
@@ -123,7 +123,7 @@ namespace MongoAdminUI.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Repopulate the roles dropdown in case of an error
+            
             var allRoles = await _roleService.GetRolesAsync();
             ViewBag.Roles = new SelectList(allRoles, "Name", "Name");
 

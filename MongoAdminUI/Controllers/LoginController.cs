@@ -18,7 +18,7 @@ namespace MongoAdminUI.Controllers
 
         public LoginController(ILogger<LoginController> logger)
         {
-            _logger = logger; // Initialize the field
+            _logger = logger; 
         }
         public IActionResult Index()
         {
@@ -38,7 +38,7 @@ namespace MongoAdminUI.Controllers
                     // Store the token in session
                     HttpContext.Session.SetString("AccessToken", token);
 
-                    // Redirect to the 'Index' action of 'UserController'
+                    
                     return RedirectToAction("Index", "User");
                 }
                 catch (InvalidOperationException ex)
@@ -50,14 +50,14 @@ namespace MongoAdminUI.Controllers
                 }
             }
 
-            return View(model); // Return with errors if ModelState is invalid
+            return View(model); 
         }
 
         private async Task<string> GetUserToken(string username, string password)
         {
             using (var client = new HttpClient())
             {
-                var tokenEndpoint = "https://localhost:7042/connect/token";
+                var tokenEndpoint = "https://data-platform-test.chemometec.com/Identity/connect/token";
                 var clientId = "adminui-client-id";
                 var clientSecret = "adminui-client-secret";
 
@@ -81,7 +81,7 @@ namespace MongoAdminUI.Controllers
                 else
                 {
                     var errorResponse = await response.Content.ReadAsStringAsync();
-                    // Log the error response for debugging
+                    
                     _logger.LogError($"Token request failed with response: {errorResponse}");
 
                     throw new InvalidOperationException("Unable to retrieve access token from IdentityServer.");

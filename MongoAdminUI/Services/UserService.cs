@@ -33,7 +33,7 @@ namespace MongoAdminUI.Services
             {
                 if (uuids.Contains(role.Id))
                 {
-                    roleNames.Add(role.Name); // Assuming RoleModel has a 'Name' property
+                    roleNames.Add(role.Name);
                 }
             }
 
@@ -106,11 +106,11 @@ namespace MongoAdminUI.Services
             }
 
             // Update the user with the new role IDs
-            var filter = Builders<UserModel>.Filter.Eq(user => user.UserName, UserName); // Match the case as in the database
+            var filter = Builders<UserModel>.Filter.Eq(user => user.UserName, UserName);
             var update = Builders<UserModel>.Update
                 .Set(user => user.Name, updatedUser.Name)
                 .Set(user => user.Email, updatedUser.Email)
-                .Set(user => user.Roles, validRoleIds); // Update with the valid role IDs
+                .Set(user => user.Roles, validRoleIds);
 
             await _users.UpdateOneAsync(filter, update);
         }
